@@ -3,21 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <title>State and Lifecycel</title>
-    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <!-- <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script> -->
+    <script src="./build/react.js"></script>
+    <script src="./build/react-dom.js"></script>
+    <script src="./build/browser.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="text/babel">
     // 状态提升（说白了就是多个组件共享状态 因而要将状态提升到父组件中去）
     // 摄氏/华氏温度计的例子
-    // function BoilingVerdict(props) {
-    //     if (props.celsius >= 100) {
-    //         return <p>The water would boil.</p>;
-    //     }
-    //     return <p>The water would not boil.</p>;
-    // }
+    function BoilingVerdict(props) {
+        if (props.celsius >= 100) {
+            return <p>The water would boil.</p>;
+        }
+        return <p>The water would not boil.</p>;
+    }
     // class Calculator extends React.Component {
     //     constructor(props){
     //         super(props);
@@ -49,44 +52,162 @@
     // );
 
     // 抽象两个组件出来
+    // const scaleNames = {
+    //     c: 'Celsius',
+    //     f: 'Fahrenheit'
+    // };
+    // class TemperatureInput extends React.Component {
+    //     constructor(props) {
+    //         super(props);
+    //         this.handleChange = this.handleChange.bind(this);
+    //         this.state = {temperature: ''};
+    //     }
+    //     handleChange(e){
+    //         this.setState({temperature: e.target.value});
+    //     }
+    //     render(){
+    //         const temperature = this.state.temperature;
+    //         const scale = this.props.scale;
+    //         return(
+    //             <fieldset>
+    //                 <legend>Enter temperature in {scaleNames[scale]}:</legend>
+    //                 <input value={temperature} 
+    //                     onChange={this.handleChange}
+    //                 />
+    //             </fieldset>
+    //         )
+    //     }
+    // }
+    // class Calculator extends React.Component {
+    //     render() {
+    //         return (
+    //             <div>
+    //                 <TemperatureInput scale='c' />
+    //                 <TemperatureInput scale='f' />
+    //             </div>
+    //         )
+    //     }
+    // }
+    // ReactDOM.render(
+    //     <Calculator />,
+    //     document.getElementById('root')
+    // );
+
+    // 作手抽象状态
+    // Writing Conversion Functions
+    function toCelsius(fahrenheit){
+        return (fahrenheit - 32) * 5 /9;
+    }
+    function toFahrenheit(celsius){
+        return (celsius * 9 / 5) + 32;
+    }
+    function tryConvert(temperature, convert){
+        const input = parseFloat(temperature);
+        if(Number.isNaN(input)){
+            return '';
+        }
+        const output = convert(input);
+        const rounded = Math.round(output * 1000) / 1000;
+        return rounded.toString();
+    }
+    // For example, tryConvert('abc', toCelsius) returns an empty string, 
+    // and tryConvert('10.22', toFahrenheit) returns '50.396'.
+
+    // Lifting State Up
+    // We will remove the local state from the TemperatureInput 
+    // and move it into the Calculator instead.
+    // 取消TemperatureInput组件的本地状态 提升到Calculator中去 成为 "source of truth"
+    // 1.替换数据来源
+    // render(){
+    //     //before: const temperature = this.state.temperature;
+    //     const temperature = this.props.temperature;
+    // }
+    // now that the temperature is coming from the parent as a prop, 
+    // the TemperatureInput has no control over it.
+    // In React, this is usually solved by making a component “controlled”. 
+    // Just like the DOM <input> accepts both a value and an onChange prop, 
+    // so can the custom TemperatureInput accept both temperature 
+    // and onTemperatureChange props from its parent Calculator.
+    // 在React中 可以 把受控参数 和控制回调一起传进来
+    // 2.替换控制handler
+    // handleChange(e){
+    //     // Before: this.setState({temperature: e.target.value});
+    //     this.props.onTemperatureChange(e.target.value);
+    //     // ...
+    // }
+    // temgperature/onTemperatureChange的命名实际上是不讲究的 比如可以改为value/onChange
+    // 父组件同步改变state从而触发子组件的re-rendering
     const scaleNames = {
         c: 'Celsius',
         f: 'Fahrenheit'
     };
     class TemperatureInput extends React.Component {
-        constructor(props) {
+        constructor(props){
             super(props);
             this.handleChange = this.handleChange.bind(this);
-            this.state = {temperature: ''};
         }
         handleChange(e){
-            this.setState({temperature: e.target.value});
+            this.props.onTemperatureChange(e.target.value);
         }
         render(){
-            const temperature = this.state.temperature;
+            const temperature = this.props.temperature;
             const scale = this.props.scale;
             return(
                 <fieldset>
                     <legend>Enter temperature in {scaleNames[scale]}:</legend>
-                    <input value={temperature} 
+                    <input value={temperature}
                         onChange={this.handleChange}
                     />
                 </fieldset>
-            )
+            );
         }
     }
-    class Calculator extends React.Component {
-        render() {
+    class Calculator extends React.Component{
+        constructor(props){
+            super(props);
+            this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
+            this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
+            this.state = {temperature: '', scale: 'c'}
+        }
+        handleCelsiusChange(temperature){
+            this.setState({scale: 'c',temperature});
+        }
+        handleFahrenheitChange(temperature){
+            this.setState({scale: 'f',temperature});
+        }
+        render(){
+            const scale = this.state.scale;
+            const temperature = this.state.temperature;
+            const celsius = scale === 'f' ? tryConvert(temperature, toCelsius) : temperature;
+            const fahrenheit = scale === 'c' ? tryConvert(temperature, toFahrenheit) : temperature;
             return (
                 <div>
-                    <TemperatureInput scale='c' />
-                    <TemperatureInput scale='f' />
+                    <TemperatureInput
+                        scale='c'
+                        temperature={celsius}
+                        onTemperatureChange={this.handleCelsiusChange}
+                    />
+                    <TemperatureInput
+                        scale='f'
+                        temperature={fahrenheit}
+                        onTemperatureChange={this.handleFahrenheitChange}
+                    />
+                    <BoilingVerdict
+                        celsius={parseFloat(celsius)}
+                    />
                 </div>
             )
         }
     }
+    ReactDOM.render(
+        <Calculator />,
+        document.getElementById('root')
+    );
+    // 说白了就是把状态抽象到一个共享父级组件中
+    // 并分发相关的参数 和 控制handler
+    // 子级组件也做好对应的接口调整
 
-
+    
     </script>
     <!--
       Note: this page is a great way to try React but it's not suitable for production.
