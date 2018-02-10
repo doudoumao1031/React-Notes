@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>State and Lifecycel</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+    // 表单
+        //表单元素生来就带有一些内部状态
+
+        // 受控组件
+        // HTML中 表单组件会和用户互动拥有并更新它们的状态
+        // React中 可变状态保存在属性中 只能通过setState()更新
+        // 我们可以通过把React state做成 单一数据来源("single source of truth")
+        // 来结合两者
+        // React渲染表单并管理用户的后续输入 并且表单的value也受React控制
+        // 这样的组件成为 受控组件 "controlled component"
+        
+        // class NameForm extends React.Component {
+        //     constructor(props) {
+        //         super(props);
+        //         this.state = {value: ''};
+        //         this.handleChange = this.handleChange.bind(this);
+        //         this.handleSubmit = this.handleSubmit.bind(this);
+        //     }
+        //     handleChange(event) {
+        //         this.setState({value: event.target.value});
+        //     }
+        //     handleSubmit(event){
+        //         alert('A name was submitted: ' + this.state.value);
+        //         event.preventDefault();
+        //     }
+        //     render(){
+        //         return(
+        //             <form onSubmit={this.handleSubmit}>
+        //                 <label>
+        //                     Name:
+        //                     <input type='text' value={this.state.value} onChange={this.handleChange} />    
+        //                 </label>
+        //                 <input type="submit" value="Submit" />
+        //             </form>
+        //         )
+        //     }
+        // }
+        // ReactDOM.render(
+        //     <NameForm />,
+        //     document.getElementById('root')
+        // );
+        // Since the value attribute is set on our form element, 
+        // the displayed value will always be this.state.value, 
+        // making the React state the source of truth. 
+        // Since handleChange runs on every keystroke to update the React state, 
+        // the displayed value will update as the user types.
+        // 说白了 用户操作触发state改变 state改变触发value改变（state所谓的 the source of truth）
+        // 受控组件中每个state变化都有相关的handler
+        // 
+        // handleChange(event){
+        //     this.setState({value: event.target.value.toUpperCase()});
+        // }
+        
+        // The textarea Tag
+        // class EssayForm extends React.Component {
+        //     constructor(props) {
+        //         super(props);
+        //         this.state = {
+        //             value: 'Please write an essay about your favorite DOM element. —— doudoudmao'
+        //         }
+        //         this.handleChange = this.handleChange.bind(this);
+        //         this.handleSubmit = this.handleSubmit.bind(this);
+        //     }
+        //     handleChange(event) {
+        //         this.setState({value:event.target.value});
+        //     }
+        //     handleSubmit(event) {
+        //         alert('An essay was submitted: ' + this.state.value);
+        //         event.preventDefault();
+        //     }
+        //     render(){
+        //         return(
+        //             <form onSubmit = {this.handleSubmit}>
+        //                 <label>
+        //                     Essay:
+        //                     <textarea value={this.state.value} onChange={this.handleChange} />
+        //                 </label>
+        //                 <input type="submit" value="Submit" />
+        //             </form>
+        //         );
+        //     }
+        // }
+        // ReactDOM.render(
+        //     <EssayForm />,
+        //     document.getElementById('root')
+        // );
+        // 受控组件说白了 就是个表单元素内部的互动式单向数据流
+
+        // The select Tag
+        // Note that the Coconut option is initially selected, 
+        // because of the selected attribute. React, 
+        // instead of using this selected attribute, 
+        // uses a value attribute on the root select tag. 
+        // This is more convenient in a controlled component 
+        // because you only need to update it in one place.
+        // React使用value（父级中）来替代传统的selected写法
+        // 在受控组件中这样显得合理一点
+        // class FlavorForm extends React.Component {
+        //     constructor(props) {
+        //         super(props);
+        //         // this.state = {value: ['coconut', 'lime']};//经实测 似乎没效果
+        //         this.state = {value: 'coconut'};
+        //         this.handleChange = this.handleChange.bind(this);
+        //         this.handleSubmit = this.handleSubmit.bind(this);
+        //     }
+        //     handleChange(event) {
+        //         this.setState({value: event.target.value});
+        //     }
+        //     handleSubmit(event) {
+        //         alert('Your favorite flavor is: ' + this.state.value);
+        //         event.preventDefault();
+        //     }
+        //     render() {
+        //         return(
+        //             <form onSubmit={this.handleSubmit}>
+        //                 <label>
+        //                     Pick your favorite La Croix flavor:
+        //                     <select value={this.state.value} onChange={this.handleChange}>
+        //                         <option value="grapefruit">Grapefruit</option>
+        //                         <option value="lime">Lime</option>
+        //                         <option value="coconut">Coconut</option>
+        //                         <option value="mango">Mango</option>
+        //                     </select>
+        //                 </label>
+        //                 <input type="submit" value="Submit" />
+        //             </form>
+        //         );
+        //     }
+        // }
+        // ReactDOM.render(
+        //     <FlavorForm />,
+        //     document.getElementById('root')
+        // );
+        
+        // Overall, this makes it so that <input type="text">, <textarea>, and <select> 
+        // all work very similarly - they all accept a value attribute 
+        // that you can use to implement a controlled component.
+        // 以上所有 <input type="text">, <textarea>, and <select>表现得很相似 接受value特性
+
+        // 提示 select可通过value传数组多选
+        // You can pass an array into the value attribute, 
+        // allowing you to select multiple options in a select tag:
+
+        // The file input Tag
+        // In HTML, an <input type="file"> lets the user choose one or more files 
+        // from their device storage to be uploaded to a server or manipulated 
+        // by JavaScript via the File API.
+        // Because its value is read-only, it is an uncontrolled component in React.
+        // 因flie input的value不可控 所以是个不可控组件
+
+        // Handling Multiple Inputs
+        // 对待多个表单元素(一个组件中)可以给他们赋一个name特性 
+        // 然后让handler基于event.target.name来选择分开加工
+        // 说白了就是想让一个handler来控制两个input 类型还不一样
+        // class Reservation extends React.Component{
+        //   constructor(props){
+        //     super(props);
+        //     this.state = {
+        //       isGoing: true,
+        //       numberOfGuests: 2
+        //     };
+        //     this.handleInputChange = this.handleInputChange.bind(this);
+        //   }
+        //   handleInputChange(event) {
+        //     const target = event.target;
+        //     const value = target.type === 'checkbox' ? target.checked : target.value;
+        //     const name = target.name;
+        //     this.setState({
+        //       [name]: value
+        //     });
+        //   }
+        //   render(){
+        //     return(
+        //       <form>
+        //         <label>
+        //           Is going:
+        //           <input 
+        //             name="isGoing"
+        //             type="checkbox"
+        //             checked={this.state.isGoing}
+        //             onChange={this.handleInputChange}
+        //           />
+        //         </label>
+        //         <br />
+        //         <label>
+        //           Number of guests:
+        //           <input
+        //             name="numberOfGuests"
+        //             type="number"
+        //             value={this.state.numberOfGuests}
+        //             onChange={this.handleInputChange}
+        //           />
+        //         </label>
+        //       </form>
+        //     );
+        //   }
+        // }
+        // ReactDOM.render(
+        //     <Reservation />,
+        //     document.getElementById('root')
+        // );
+        // 上面用了个小技巧 动态属性计算
+        // this.setState({
+        //   [name]: value
+        // });
+        // ES5的等效写法
+        // var partialState = {};
+        // partialState[name] = value;
+        // this.setState(partialState);
+        // 也注意到setState的merge能力
+        
+        // Specifying the value prop on a controlled component 
+        // prevents the user from changing the input unless you desire so. 
+        // If you’ve specified a value but the input is still editable,
+        //  you may have accidentally set value to undefined or null.
+        // 对受控组件设值会阻止用户的默认修改 如果input依然可修改 
+        // 那么应该是value值不小心设成了undefined/null
+        // 例子如下
+        ReactDOM.render(<input value="hi" />, document.getElementById('root'));
+        setTimeout(() => {
+          ReactDOM.render(<input value={null} />, document.getElementById('root'));  
+        }, 1000);
+
+        // It can sometimes be tedious to use controlled components, 
+        // because you need to write an event handler for every way your data can change and pipe all of the input state through a React component. 
+        // This can become particularly annoying when you are converting a preexisting codebase to React, or integrating a React application with a non-React library. In these situations, you might want to check out uncontrolled components, an alternative technique for implementing input forms.
+        
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>

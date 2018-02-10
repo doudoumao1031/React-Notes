@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>State and Lifecycel</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+    // 状态提升（说白了就是多个组件共享状态 因而要将状态提升到父组件中去）
+    // 摄氏/华氏温度计的例子
+    // function BoilingVerdict(props) {
+    //     if (props.celsius >= 100) {
+    //         return <p>The water would boil.</p>;
+    //     }
+    //     return <p>The water would not boil.</p>;
+    // }
+    // class Calculator extends React.Component {
+    //     constructor(props){
+    //         super(props);
+    //         this.handleChange = this.handleChange.bind(this);
+    //         this.state = {temperature: ''};
+    //     }
+    //     handleChange(e) {
+    //         this.setState({temperature: e.target.value});
+    //     }
+    //     render(){
+    //         const temperature = this.state.temperature;
+    //         return (
+    //             <fieldset>
+    //                 <legend>Enter temperature in Celsius</legend>
+    //                 <input 
+    //                     value={temperature}
+    //                     onChange={this.handleChange}
+    //                 />
+    //                 <BoilingVerdict 
+    //                     celsius={parseFloat(temperature)}
+    //                 />
+    //             </fieldset>
+    //         );
+    //     }
+    // }
+    // ReactDOM.render(
+    //     <Calculator />,
+    //     document.getElementById('root')
+    // );
+
+    // 抽象两个组件出来
+    const scaleNames = {
+        c: 'Celsius',
+        f: 'Fahrenheit'
+    };
+    class TemperatureInput extends React.Component {
+        constructor(props) {
+            super(props);
+            this.handleChange = this.handleChange.bind(this);
+            this.state = {temperature: ''};
+        }
+        handleChange(e){
+            this.setState({temperature: e.target.value});
+        }
+        render(){
+            const temperature = this.state.temperature;
+            const scale = this.props.scale;
+            return(
+                <fieldset>
+                    <legend>Enter temperature in {scaleNames[scale]}:</legend>
+                    <input value={temperature} 
+                        onChange={this.handleChange}
+                    />
+                </fieldset>
+            )
+        }
+    }
+    class Calculator extends React.Component {
+        render() {
+            return (
+                <div>
+                    <TemperatureInput scale='c' />
+                    <TemperatureInput scale='f' />
+                </div>
+            )
+        }
+    }
+
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>

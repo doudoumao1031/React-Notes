@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>State and Lifecycel</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+        // 条件渲染
+
+        // Conditional rendering in React works the same way conditions work in JavaScript. 
+        // Use JavaScript operators like if or the conditional operator 
+        // to create elements representing the current state, 
+        // and let React update the UI to match them.
+        // 在React中像操作JS一样 用if进行条件渲染
+        // function UserGreeting(props) {
+        //     return <h1>Welcome back</h1>;
+        // }
+        // function GuestGreeting(props) {
+        //     return <h1>Please sign up.</h1>;
+        // }
+        // function Greeting(props) {
+        //   const isLoggedIn = props.isLoggedIn;
+        //   if(isLoggedIn) {
+        //     return <UserGreeting />
+        //   }
+        //   return <GuestGreeting />
+        // }
+        // ReactDOM.render(
+        //   <Greeting isLoggedIn={true} />,
+        //   document.getElementById('root')
+        // );
+
+        // 可使用变量保存元素 用于抽象html
+        // You can use variables to store elements. This can help you conditionally render 
+        // a part of the component while the rest of the output doesn’t change.
+        // function LoginButton(props) {
+        //   return (
+        //     <button onClick={props.onClick}>
+        //       Login  
+        //     </button>
+        //   );
+        // }
+        // function LogoutButton(props) {
+        //   return (
+        //     <button onClick={props.onClick}>
+        //       Logout  
+        //     </button>
+        //   );
+        // }
+        // class LoginControl extends React.Component {
+        //   constructor(props) {
+        //     super(props);
+        //     this.handleLoginClick = this.handleLoginClick.bind(this);
+        //     this.handleLogoutClick = this.handleLogoutClick.bind(this);
+        //     this.state = {isLoggedIn: false};
+        //   }
+        //   handleLoginClick(){
+        //     this.setState({isLoggedIn: true});
+        //   }
+        //   handleLogoutClick(){
+        //     this.setState({isLoggedIn: false});
+        //   }
+        //   render(){
+        //     const isLoggedIn = this.state.isLoggedIn;//常量？指针不变？
+        //     let button = null;
+        //     if(ifLoggedIn){
+        //       button = <LogoutButton onClick={this.handleLogoutClick} />;
+        //     }else{
+        //       button = <LoginButton onClick={this.handleLoginClick} />;
+        //     }
+        //     return ({
+        //       <div>
+        //         <Greeting isLoggedIn={isLoggedIn} />
+        //         {button}  
+        //       </div>
+        //     });
+        //   }
+        // }
+        // ReactDOM.render(
+        //   <LoginControl />,
+        //   document.getElementById('root')
+        // );
+
+        // 逻辑符号 && 的巧用
+        // It works because in JavaScript, true && expression always evaluates to expression, 
+        // and false && expression always evaluates to false.
+        function Mailbox(props) {
+          const unreadMessages = props.unreadMessages;
+          return (
+            <div>
+              <h1>Hello!</h1>  
+              {unreadMessages.length > 0 &&
+                <h2>
+                  You have {unreadMessages.length} unread messages.
+                </h2>
+              }
+            </div>
+          );
+        }
+        // const messages = ['a','b','c'];
+        const messages = ['React', 'Re: React', 'Re:Re: React'];
+        ReactDOM.render(
+          <Mailbox unreadMessages={messages} />,
+          document.getElementById('root')
+        );
+
+        // condition ? true : false.的用法
+        // 而且是直接用在return里
+        // 上面的片段可改写为
+        // render(){
+        //   const isLoggedIn = this.state.isLoggedIn;
+        //   return (
+        //     {isLoggedIn ? (
+        //       <LogoutButton onClick={this.handleLogoutClick} />
+        //     ) : (
+        //       <LoginButton onClick={this.handleLoginClick} />
+        //     )}
+        //   )
+        // }
+
+        // 组件的条件隐藏(null输出)
+        // In rare cases you might want a component to hide itself 
+        // even though it was rendered by another component. 
+        // To do this return null instead of its render output.
+        function WarningBanner(props){
+          if(!props.warn){
+            return null;
+          }
+          return (
+            <div className="warning">
+              Warning!
+            </div>
+          );
+        }
+        class Page extends React.Component {
+          constructor(props){
+            super(props);
+            this.state = {showWarning:true};
+            this.handleToggleClick = this.handleToggleClick.bind(this);
+          }
+          handleToggleClick(){
+            this.setState(prevState => ({
+              showWarning: !prevState.showWarning
+            }))
+          }
+          render(){
+            return (
+              <div>
+                <WarningBanner warn={this.state.showWarning} />
+                <button onClick={this.handleToggleClick}>
+                  {this.state.showWarning ? 'hide' : 'show'}  
+                </button>
+              </div>
+            )
+          }
+        }
+        ReactDOM.render(
+          <Page />,
+          document.getElementById('root')
+        )
+        
+    
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>State and Lifecycel</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+    // 序列和键值
+        
+        // 渲染多个组件1
+        // const numbers = [1,2,3,4,5];
+        // const listItems = numbers.map((number) =>
+        //     <li>{number}</li>
+        // );
+        // ReactDOM.render(
+        //     <ul>{listItems}</ul>,
+        //     document.getElementById('root')
+        // );
+
+        // 渲染多个组件2(封装到一个组件中)
+        // function NumberList(props) {
+        //     const numbers = props.numbers;
+        //     const listItems = numbers.map((number) =>
+        //         <li>{number}</li>
+        //     );
+        //     return (
+        //         <ul>{listItems}</ul>
+        //     );
+        // }
+        // const numbers = [1,2,3,4,5];
+        // ReactDOM.render(
+        //     <NumberList numbers={numbers} />,
+        //     document.getElementById('root')
+        // );
+
+        // 给KEY值
+        // Keys help React identify which items have changed, are added, 
+        // or are removed. Keys should be given to the elements 
+        // inside the array to give the elements a stable identity:
+        // keys 帮助react区分组件（像是组件身份）
+        // const todoItems = todos.map((todo) => 
+        //     <li key={todo.id}>
+        //         {todo.text}
+        //     </li>
+        // );
+        // const todoItems = todos.map((todo, index) =>
+        //     // Only do this if items have no stable IDs
+        //     // 也可用数组自带的index（但是是下策） 
+        //     <li key={index}>
+        //         {todo.text}
+        //     </li>
+        // );
+        // 如果不显式地赋key值 那么REACT将默认使用index
+        // 但使用index会带来关于状态的负面作用
+        // We don’t recommend using indexes for keys if the order of items may change. 
+        // This can negatively impact performance and may cause issues with component state. 
+        // Check out Robin Pokorny’s article for an in-depth explanation 
+        // on the negative impacts of using an index as a key. 
+        // If you choose not to assign an explicit key to list items then React will default to using indexes as keys.
+    
+        // 赋key的位置
+        // 仅在数组序列中 key才发挥作用
+        // Keys only make sense in the context of the surrounding array.
+        // function ListItem(props){
+        //     return <li>{props.value}</li>;
+        // }
+        // function NumberList(props){
+        //     const numbers = props.numbers;
+        //     const listItems = numbers.map((number) =>
+        //         <ListItem key={number.toString()}
+        //             value={number} />
+        //     );
+        //     return (
+        //         <ul>{listItems}</ul>
+        //     )
+        // }
+        // const numbers = [1,2,3,4,5];
+        // ReactDOM.render(
+        //     <NumberList numbers={numbers} />,
+        //     document.getElementById('root')
+        // );
+        // A good rule of thumb is that elements inside the map() call need keys.
+        // 一个好的做法是在map()中的组件都给它赋key
+
+        // Keys Must Only Be Unique Among Siblings
+        // 相邻元素间（数组单元）的key值别相互污染 但key值也没必要全局单例（unique）
+        // function Blog(props) {
+        //     const sidebar = (
+        //         <ul>
+        //             {props.posts.map((post) => 
+        //                 <li key={post.id}>
+        //                     {post.title}
+        //                 </li>
+        //             )}
+        //         </ul>
+        //     );
+        //     const content = props.posts.map((post) => 
+        //         <div key={post.id}>
+        //             <h3>{post.title}</h3>
+        //             <p>{post.content}</p>
+        //         </div>
+        //     );
+        //     return (
+        //         <div>
+        //             {sidebar}
+        //             <hr />
+        //             {content}
+        //         </div>
+        //     );
+        // }
+        // const posts = [
+        //     {id: 1, title: 'Hello World', content: 'Welcome to learning React!'},
+        //     {id: 2, title: 'Installation', content: 'You can install React from npm.'}
+        // ];
+        // ReactDOM.render(
+        //     <Blog posts={posts} />,
+        //     document.getElementById('root')
+        // )
+
+        // map()嵌在JSX中 {}语法的威力
+        function NumberList(props){
+            const numbers = props.numbers;
+            const listItems = numbers.map((number) =>
+                <ListItem key={number.toString()}
+                    value={number} />
+            );
+            return (
+                <ul>
+                    {listItems}
+                </ul>
+            )
+        }
+        //嵌入展示
+        function NumberList(props){
+            const numbers = props.numbers;
+            return (
+                <ul>
+                    {numbers.map((number) => 
+                        <ListItem key={number.toString()}
+                            value={number} />
+                    )}
+                </ul>
+            );
+        }
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>

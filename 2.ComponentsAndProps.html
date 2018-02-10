@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>State and Lifecycel</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+    // 函数式组件
+    //    functional conponent 以下两种写法等效
+
+        // function Welcome(pros){
+        //     return <h1>doudou, {props.name}</h1>;
+        // }
+        // class Welcome extends React.Component {
+        //     render() {
+        //         return <h1>Hello, {this.props.name}</h1>;
+        //     }
+        // }
+
+        // The above two components are equivalent from React’s point of view.
+
+
+    // 自定义组件传参
+        // When React sees an element representing a user-defined component, 
+        // it passes JSX attributes to this component as a single object. We call this object “props”.
+
+        // function Welcome(props){
+        //     return <h1>Hello, {props.name}</h1>;
+        // }
+        // const element = <Welcome name="doudoumao" />;
+        // ReactDOM.render(
+        //     element,
+        //     document.getElementById('root')
+        // );
+
+        // 自定义组件一定要大写 否则会被当成原生DOM
+        // Always start component names with a capital letter.
+        // React treats components starting with lowercase letters as DOM tags. 
+        // For example, <div /> represents an HTML div tag, 
+        // but <Welcome /> represents a component and requires Welcome to be in scope.
+    
+    // 嵌套/组合组件 Composing Components
+
+        // function Welcome(props){
+        //     return <h1>doudoumao, {props.name}</h1>;
+        // }
+        // function App(){
+        //     return (
+        //         <div>
+        //             <Welcome name='sara' />
+        //             <Welcome name='lyly' />
+        //             <Welcome name='edite' />
+        //         </div>
+        //     )
+        // }
+        // ReactDOM.render(
+        //     <App />,
+        //     document.getElementById('root');
+        // );
+
+        // Typically, new React apps have a single App component at the very top. 
+        // However, if you integrate React into an existing app, 
+        // you might start bottom-up with a small component like Button 
+        // and gradually work your way to the top of the view hierarchy.
+    
+    // 抽象/萃取组件 Extracting Components
+    // 感觉这例子有点极端
+            
+        function formatDate(date) {
+            return date.toLocaleDateString();
+        }
+        
+        function Avatar(props) {
+            return (
+                <img className='Avatar'
+                    src={props.user.avatarUrl}
+                    alt={props.user.name}
+                />
+            );
+        }
+        function UserInfo(props) {
+            return (
+                <div className='UserInfo'>
+                    <Avatar user={props.user} />
+                    <div className='UserInfo-name'>
+                        {props.user.name}
+                    </div>
+                </div>
+            )
+        }
+        function Comment(props) {
+            return (
+                <div className='Comment'>
+                    <UserInfo user={props.author} />
+                    <div className='Comment-text'>
+                        {props.text}
+                    </div>
+                    <div className='Comment-date'>
+                        {formatDate(props.date)}
+                    </div>
+                </div>
+            )
+        }
+
+        const comment = {
+            date: new Date(),
+            text:
+                'I hope you enjoy learning React!',
+            author: {
+                name: 'Hello Kitty',
+                avatarUrl:
+                'http://placekitten.com/g/64/64',
+            },
+        };
+        ReactDOM.render(
+            <Comment
+                date={comment.date}
+                text={comment.text}
+                author={comment.author}
+            />,
+            document.getElementById('root')
+        );
+
+    // 所有的props参数不能再加工
+    // All React components must act like pure functions with respect to their props.
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>

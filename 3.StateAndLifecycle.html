@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>State and Lifecycel</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+    // In this section, we will learn how to make the Clock component truly reusable and encapsulated. 
+    // It will set up its own timer and update itself every second.
+
+    // 函数式组件转class组件
+    // Converting a Function to a Class
+
+        // 1.Create an ES6 class, with the same name, that extends React.Component.
+        // 2.Add a single empty method to it called render().
+        // 3.Move the body of the function into the render() method.
+        // 4.Replace props with this.props in the render() body.
+        // 5.Delete the remaining empty function declaration.
+
+        // class Clock extends React.Component {
+        //     render(){
+        //         return (
+        //             <div>
+        //                 <h1>doudoumao</h1>
+        //                 <h2>It is {this.props.date.toLocaleTimeString()}.</h2>
+        //             </div>
+        //         );
+        //     }
+        // }
+
+    // 添加状态到类 
+    // Adding Local State to a Class
+
+        // 1.Replace this.props.date with this.state.date in the render() method
+        // 2.Add a class constructor that assigns the initial this.state
+        // 3.Remove the date prop from the <Clock /> element
+
+        // class Clock extends React.Component {
+        //     constructor(props) {
+        //         super(props);
+        //         this.state = {date: new Date()};
+        //     }
+        //     render() {
+        //         return (
+        //             <div>
+        //                 <h1>doudoumao</h1>
+        //                 <h2>It is {this.state.date.toLocaleTimeString()}</h2>
+        //             </div>
+        //         );
+        //     }
+        // }
+
+        // ReactDOM.render(
+        //     <Clock />,
+        //     document.getElementById('root')
+        // );
+
+    // 添加生命钩子方法到类 Adding Lifecycle Methods to a Class
+    // 钩子方法要写在组件里面
+
+        // class Clock extends React.Component {
+
+        //     constructor(props) {
+        //         super(props);
+        //         this.state = {date: new Date()};
+        //     }
+
+        //     componentDidMount() {
+        //         this.timerID = setInterval(
+        //             () => this.tick(),
+        //             1000
+        //         );
+        //     }
+
+        //     componentWillUnmount() {
+        //         clearInterval(this.timerID);
+        //     }
+
+        //     tick() {
+        //         this.setState({ //本质上就是调这个方法刷新状态
+        //             date: new Date()
+        //         });
+        //     }
+
+        //     render() {
+        //         return (
+        //             <div>
+        //                 <h1>doudoumao</h1>
+        //                 <h2>It is {this.state.date.toLocaleTimeString()}</h2>
+        //             </div>
+        //         );
+        //     }
+        // }
+
+        // ReactDOM.render(
+        //     <Clock />,
+        //     document.getElementById('root')
+        // );
+        
+        // this.setState({...}) //本质上就是调这个方法刷新状态
+        
+    // Tipps
+
+        // 1.
+        //Do Not Modify State Directly
+        //state不能直接修改
+        // Wrong
+        // this.state.comment = 'Hello';
+        // Correct
+        // this.setState({comment: 'Hello'});
+
+        // 2.
+        //State Updates May Be Asynchronous
+        //state也许会异步更新
+        // Because this.props and this.state may be updated asynchronously, 
+        // you should not rely on their values for calculating the next state.
+        // 因为state更新的异步性 所以state之间不能相互依赖
+        // 但可以用setState的函数参数写法
+        // Wrong
+        // this.setState({
+        //    counter: this.state.counter + this.props.increment,
+        // });
+        // Correct
+        // this.setState((prevState, props) => ({
+        //     counter: prevState.counter + props.increment
+        // }));
+
+        // 3.
+        // State Updates are Merged
+        // state可融合更新（部分刷新）
+        // constructor(props) {
+        //     super(props);
+        //     this.state = {
+        //         posts: [],
+        //         comments: []
+        //     };
+        // }
+        // componentDidMount() {
+        //     fetchPosts().then(response => {
+        //         this.setState({
+        //             posts: response.posts
+        //         });
+        //     });
+
+        //     fetchComments().then(response => {
+        //         this.setState({
+        //             comments: response.comments
+        //         });
+        //     });
+        // }
+    
+    // The Data Flows Down 单向数据流
+        // Neither parent nor child components can know if a certain component is stateful or stateless, 
+        // and they shouldn’t care whether it is defined as a function or a class.
+        // This is why state is often called local or encapsulated. 
+        // It is not accessible to any component other than the one that owns and sets it.
+        // state是内部封闭的 encapsulated
+
+        // 向子组件传参
+        // <h2>It is {this.state.date.toLocaleTimeString()}.</h2> //原生组件
+        // <FormattedDate date={this.state.date} /> //自定义传参
+        // function FormattedDate(props) {
+        //     return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+        // }
+        // 数据来源自定义组件本身是不会关心的
+        // The FormattedDate component would receive the date in its props and wouldn’t know 
+        // whether it came from the Clock’s state, 
+        // from the Clock’s props, or was typed by hand:
+        
+        // If you imagine a component tree as a waterfall of props, 
+        // each component’s state is like an additional water source 
+        // that joins it at an arbitrary point but also flows down.
+        // 如果把组件树想象成props瀑布 那么每一个component的state就像一个额外的水源
+
+    // 组件之间相互独立
+        class Clock extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {date: new Date()};
+            }
+            componentDidMount() {
+                this.timerID = setInterval(
+                    () => this.tick(),
+                    1000
+                );
+            }
+            componentWillUnmount() {
+                clearInterval(this.timerID);
+            }
+            tick() {
+                this.setState({
+                    date: new Date()
+                });
+            }
+            render() {
+                return (
+                    <div>
+                        <h1>doudoumao</h1>
+                        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+                    </div>
+                );
+            }
+        }
+        function App() {
+            return (
+                <div>
+                    <Clock />
+                    <Clock />
+                    <Clock />
+                </div>
+            );
+        }
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>
