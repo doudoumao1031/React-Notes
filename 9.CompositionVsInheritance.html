@@ -13,7 +13,148 @@
   <body>
     <div id="root"></div>
     <script type="text/babel">
+    // React有强大的组合体系 推荐使用组合而不是继承来处理代码复用问题
     
+    // 案例
+
+    // 1.Containment 包含
+    // 有些组件不能提前知道它们的子组件 比如说Sidebar Dialog
+    // 我们推荐 使用 the special children prop 把子组件直接传到输出
+    // {props.children}就是个插槽思路
+    // className={'FancyBorder FancyBorder-' + props.color}的拼接写法也有点叼
+    // funciton FancyBorder(props){
+    //     return (
+    //         <div className={'FancyBorder FancyBorder-' + props.color}>
+    //             {props.children}
+    //         </div>
+    //     )
+    // }
+    // function WelcomeDialog(){
+    //     return (
+    //         <FancyBorder color="blue">
+    //             <h1 className="Dialog-title">
+    //                 Welcome
+    //             </h1>
+    //             <p classNmae="Dialog-messgae">
+    //                 Thank you for vistiting our  spaceraft!
+    //             </p>
+    //         </FancyBorder>
+    //     );
+    // }
+    // 多个插槽 这种情况下不能使用默认插槽children需自己规定属性名
+    // function SplitPane(props) {
+    //     return (
+    //         <div className="SplitPane">
+    //             <div className="SplitPane-left">
+    //                 {props.left}
+    //             </div>
+    //             <div className="SplitPane-right">
+    //                 {props.right}
+    //             </div>
+    //         </div>
+    //     );
+    // }
+    // function App(){
+    //     return (
+    //         <SplitPane 
+    //             left={
+    //                 <Contacts />
+    //             }
+    //             right={
+    //                 <Chat />
+    //             }
+    //         />
+    //     );
+    // }
+
+    // 2.Specialization 特殊化
+    // 有时候我们考虑某个组件是某个组件的特殊情况case
+    // 比如说 WelcomeDialog之于Dialog
+    // 在React中 较特殊的组件渲染较通用的组件并赋予其指定props 
+    // function Dialog(props){
+    //     return (
+    //         <FancyBorder color="blue">
+    //             <h1 className="Dialog-title">
+    //                 {props.title}
+    //             </h1>
+    //             <p className="Dialog-message">
+    //                 {props.message}
+    //             </p>
+    //         </FancyBorder>
+    //     );
+    // }
+    // // 特殊化的Dialog 增强寄生模式对象。。。
+    // function WelcomeDialog(){
+    //     return(
+    //         <Dialog 
+    //             title="Welcome"
+    //             message="Thank you for visiting our spacecraft!"
+    //         />
+    //     );
+    // }
+    // 等效于classes写法
+    function FancyBorder(props) {
+        return (
+            <div className={'FancyBorder FancyBorder-' + props.color}>
+                {props.children}
+            </div>
+        );
+    }
+    function Dialog(props){
+        return(
+            <FancyBorder color="blue">
+                <h1 className="Dialog-title">
+                    {props.title}
+                </h1>
+                <p className="Dialog-message">
+                    {props.message}
+                </p>
+                {props.children}
+            </FancyBorder>
+        );
+    }
+    class SignUpDialog extends React.Component {
+        constructor(props){
+            super(props);
+            this.handleChange = this.handleChange.bind(this);
+            this.handleSignUp = this.handleSignUp.bind(this);
+            this.state = {login: ''};
+        }
+        render(){
+            return(
+                <Dialog title="Mars Exploration Program"
+                    message="How should we refer to you?"
+                >
+                    <input value={this.state.login}
+                        onChange={this.handleChange}
+                    />
+                    <button onClick={this.handleSignUp}>
+                        Sign Me Up!
+                    </button>
+                </Dialog>
+            )
+        }
+        handleChange(e){
+            this.setState({login:e.target.value});
+        }
+        handleSignUp(){
+            alert("Welcome aboard, ${this.state.login}!"); //这两个居然有区别
+            alert(`Welcome aboard, ${this.state.login}!`);
+        }
+    }
+    ReactDOM.render(
+        <SignUpDialog />,
+        document.getElementById('root')
+    );
+    // 以上这个案例启示涉及到一个多重插槽 横向children/left/right 纵向children
+    // 等于说通过组合一层一层把一个组件复杂花了
+
+    // 属性和组合为你提供了以清晰和安全的方式自定义组件的样式和行为所需的所有灵活性。
+    // 请记住，组件可以接受任意元素，包括基本数据类型、React 元素或函数。
+
+    // 如果要在组件之间复用 UI 无关的功能，我们建议将其提取到单独的 JavaScript 模块中。
+    // 这样可以在不对组件进行扩展的前提下导入并使用该函数、对象或类。
+
     
     </script>
     <!--
@@ -29,4 +170,23 @@
       * https://reactjs.org/docs/cdn-links.html
     -->
   </body>
+    <style>
+        .FancyBorder {
+        padding: 10px 10px;
+        border: 10px solid;
+        }
+
+        .FancyBorder-blue {
+        border-color: blue;
+        }
+
+        .Dialog-title {
+        margin: 0;
+        font-family: sans-serif;
+        }
+
+        .Dialog-message {
+        font-size: larger;
+        }
+    </style>
 </html>

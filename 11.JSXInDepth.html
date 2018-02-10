@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>11.JSXInDepth</title>
+    <!-- <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script> -->
+    <script src="./build/react.js"></script>
+    <script src="./build/react-dom.js"></script>
+    <script src="./build/browser.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+    // 深入 JSX
+
+    // 1.语法糖
+    // JSX 只是 React.createElement(compnent, props, ...children)的语法糖
+    <MyButton color="blue" shadowSize={2}>
+        Click Me
+    </MyButton>
+    // 编译为:
+    React.createElement(
+        MyButton,
+        {color:'blue',shadowSize:2},
+        'Click Me'
+    )
+    // 便签如没子代可以自闭和
+    <div className="sidebar" />
+    // 编译为:
+    React.createElement(
+        'div',
+        {className: 'sidebar'},
+        null
+    )     
+    // 在线转换器
+    // https://babeljs.io/repl/#?babili=false&evaluate=true&lineWrap=false&presets=es2015%2Creact%2Cstage-0&code=function%20hello()%20%7B%0A%20%20return%20%3Cdiv%3EHello%20world!%3C%2Fdiv%3E%3B%0A%7D
+
+    // 2.引用变量
+    // 指定React元素类型
+    // 大写开头的JSX标签标示一个React组件 必须在作用域中闲声明
+    // JSX编译后调用React.createElemnt ，因此React需声明
+    import React from 'react';
+    import CustomButton from './CustomButton';
+
+    function WarningButton() {
+        // 返回 React.createElement(CustomButton, {color: 'red'}, null);
+        return <CustomButton color="red" />;
+    }
+
+    // 3.点表示法 从一个模块中导出多个React组件 还可以哦
+    import React from 'react';
+    const MyComponents = {
+        DatePicker: function DatePicker(props) {
+            return <div>Image a {props.color} datepicker here.</div>
+        }
+    }
+    fucntion BlueDatePicker() {
+        return <MyComponents.DatePicker color="blue" />
+    }
+
+    // 4.首字母大写
+    // 小写开头表示一个内置组件 如<div>或<span> 并将'div'或'span'传递给React.createElement
+    // 大写开始 如<Foo />编译为React.createElement(Foo) 并对应于导入的组件
+    // 错误
+        import React from 'react';
+        // 错误！组件名应该首字母大写:
+        function hello(props) {
+            // 正确！div 是有效的 HTML 标签:
+            return <div>Hello {props.toWhat}</div>;
+        }
+
+        function HelloWorld() {
+            // 错误！React 会将小写开头的标签名认为是 HTML 原生标签:
+            return <hello toWhat="World" />;
+        }
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>
